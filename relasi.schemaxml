@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="latin1" collation="latin1_swedish_ci">project_athena_emr</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="pendaftaran" view="colnames">
+<left>202</left>
+<top>14</top>
+<width>108</width>
+<height>192</height>
+<sql_create_table>CREATE TABLE `pendaftaran` (
+  `id_daftar` varchar(10) NOT NULL,
+  `id_petugas` varchar(10) NOT NULL,
+  `id_pasien` varchar(15) NOT NULL,
+  `kategori` varchar(100) NOT NULL,
+  `id_poli` varchar(8) NOT NULL,
+  `waktu` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `no_antrian` int(11) NOT NULL,
+  PRIMARY KEY (`id_daftar`),
+  KEY `FK_pendaftaran1` (`id_petugas`),
+  KEY `FK_pendaftaran2` (`id_pasien`),
+  KEY `FK_pendaftaran3` (`id_poli`),
+  CONSTRAINT `FK_pendaftaran3` FOREIGN KEY (`id_poli`) REFERENCES `poli` (`id_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_pendaftaran1` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_pendaftaran2` FOREIGN KEY (`id_pasien`) REFERENCES `pasien` (`id_pasien`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="dokter" view="colnames">
+<left>426</left>
+<top>44</top>
+<width>122</width>
+<height>243</height>
+<sql_create_table>CREATE TABLE `dokter` (
+  `id_dokter` varchar(10) NOT NULL,
+  `id_poli` varchar(8) NOT NULL,
+  `nama_dokter` varchar(100) NOT NULL,
+  `jk_dokter` varchar(10) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `no_telp` varchar(20) NOT NULL,
+  `foto` varchar(100) NOT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id_dokter`),
+  KEY `FK_dokter` (`id_poli`),
+  CONSTRAINT `FK_dokter` FOREIGN KEY (`id_poli`) REFERENCES `poli` (`id_poli`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="poli" view="colnames">
+<left>670</left>
+<top>0</top>
+<width>110</width>
+<height>158</height>
+<sql_create_table>CREATE TABLE `poli` (
+  `id_poli` varchar(8) NOT NULL,
+  `nama_poli` varchar(255) NOT NULL,
+  `tarif` double NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id_poli`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="rekam_medis" view="colnames">
+<left>510</left>
+<top>320</top>
+<width>116</width>
+<height>277</height>
+<sql_create_table>CREATE TABLE `rekam_medis` (
+  `id_rekam` varchar(20) NOT NULL,
+  `id_dokter` varchar(10) NOT NULL,
+  `id_daftar` varchar(15) NOT NULL,
+  `id_pasien` varchar(15) NOT NULL,
+  `waktu` date NOT NULL,
+  `id_hasil` varchar(25) NOT NULL,
+  `id_lab` varchar(8) NOT NULL,
+  `id_resep` varchar(18) NOT NULL,
+  `keluhan` text NOT NULL,
+  `gejala` text NOT NULL,
+  `diagnosa` text NOT NULL,
+  `penanganan` text NOT NULL,
+  PRIMARY KEY (`id_rekam`),
+  KEY `FK_rekam_medis` (`id_dokter`),
+  KEY `FK_rekam_medis1` (`id_daftar`),
+  KEY `FK_rekam_medis2` (`id_pasien`),
+  KEY `FK_rekam_medis4` (`id_hasil`),
+  KEY `FK_rekam_medis5` (`id_lab`),
+  KEY `FK_rekam_medis7` (`id_resep`),
+  CONSTRAINT `FK_rekam_medis7` FOREIGN KEY (`id_resep`) REFERENCES `resep` (`id_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_rekam_medis` FOREIGN KEY (`id_dokter`) REFERENCES `dokter` (`id_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_rekam_medis1` FOREIGN KEY (`id_daftar`) REFERENCES `pendaftaran` (`id_daftar`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_rekam_medis2` FOREIGN KEY (`id_pasien`) REFERENCES `pasien` (`id_pasien`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_rekam_medis4` FOREIGN KEY (`id_hasil`) REFERENCES `hasil_lab` (`id_hasil`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_rekam_medis5` FOREIGN KEY (`id_lab`) REFERENCES `lab` (`id_lab`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="lab" view="colnames">
+<left>603</left>
+<top>819</top>
+<width>110</width>
+<height>158</height>
+<sql_create_table>CREATE TABLE `lab` (
+  `id_lab` varchar(8) NOT NULL,
+  `nama` varchar(100) NOT NULL,
+  `tarif` double NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id_lab`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="hasil_lab" view="colnames">
+<left>0</left>
+<top>340</top>
+<width>108</width>
+<height>175</height>
+<sql_create_table>CREATE TABLE `hasil_lab` (
+  `id_hasil` varchar(25) NOT NULL,
+  `id_lab` varchar(8) NOT NULL,
+  `id_petugas` varchar(10) NOT NULL,
+  `id_daftar` varchar(15) NOT NULL,
+  `hasil_lab` text NOT NULL,
+  `waktu` date NOT NULL,
+  PRIMARY KEY (`id_hasil`),
+  KEY `FK_hasil_lab` (`id_lab`),
+  KEY `FK_hasil_lab1` (`id_petugas`),
+  KEY `FK_hasil_lab2` (`id_daftar`),
+  CONSTRAINT `FK_hasil_lab2` FOREIGN KEY (`id_daftar`) REFERENCES `pendaftaran` (`id_daftar`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_hasil_lab` FOREIGN KEY (`id_lab`) REFERENCES `lab` (`id_lab`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_hasil_lab1` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="detail_resep" view="colnames">
+<left>364</left>
+<top>642</top>
+<width>121</width>
+<height>192</height>
+<sql_create_table>CREATE TABLE `detail_resep` (
+  `id_dresep` varchar(18) NOT NULL,
+  `id_resep` varchar(18) NOT NULL,
+  `id_obat` varchar(10) NOT NULL,
+  `dosis` varchar(100) NOT NULL,
+  `satuan` int(11) NOT NULL,
+  `jumlah` int(11) NOT NULL,
+  `aturan_pakai` int(11) NOT NULL,
+  PRIMARY KEY (`id_dresep`),
+  KEY `FK_detail_resep` (`id_resep`),
+  KEY `FK_detail_resep1` (`id_obat`),
+  CONSTRAINT `FK_detail_resep1` FOREIGN KEY (`id_obat`) REFERENCES `obat` (`id_obat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_detail_resep` FOREIGN KEY (`id_resep`) REFERENCES `resep` (`id_resep`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="obat" view="colnames">
+<left>755</left>
+<top>746</top>
+<width>110</width>
+<height>209</height>
+<sql_create_table>CREATE TABLE `obat` (
+  `id_obat` varchar(10) NOT NULL,
+  `id_jenis` varchar(11) NOT NULL,
+  `nama_obat` varchar(255) NOT NULL,
+  `kegunaan` varchar(255) NOT NULL,
+  `harga` double NOT NULL,
+  `satuan` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id_obat`),
+  KEY `FK_obat` (`id_jenis`),
+  CONSTRAINT `FK_obat` FOREIGN KEY (`id_jenis`) REFERENCES `jenis_obat` (`id_jenis`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="petugas" view="colnames">
+<left>935</left>
+<top>402</top>
+<width>130</width>
+<height>226</height>
+<sql_create_table>CREATE TABLE `petugas` (
+  `id_petugas` varchar(10) NOT NULL,
+  `nama_petugas` varchar(100) NOT NULL,
+  `jk` enum('P','L') NOT NULL,
+  `jabatan` varchar(100) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `foto` varchar(100) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id_petugas`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="jenis_obat" view="colnames">
+<left>838</left>
+<top>50</top>
+<width>112</width>
+<height>141</height>
+<sql_create_table>CREATE TABLE `jenis_obat` (
+  `id_jenis` varchar(11) NOT NULL,
+  `nama_jenis` varchar(50) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id_jenis`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="user" view="colnames">
+<left>179</left>
+<top>729</top>
+<width>103</width>
+<height>141</height>
+<sql_create_table>CREATE TABLE `user` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(30) NOT NULL,
+  `password` varchar(300) NOT NULL,
+  `level` enum('admin','dokter','pendaftaran','kasir','apoteker') NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="pembayaran" view="colnames">
+<left>956</left>
+<top>729</top>
+<width>111</width>
+<height>175</height>
+<sql_create_table>CREATE TABLE `pembayaran` (
+  `id_bayar` varchar(15) NOT NULL,
+  `id_daftar` varchar(15) NOT NULL,
+  `id_petugas` varchar(10) NOT NULL,
+  `jenis_biaya` varchar(50) NOT NULL,
+  `biaya` double NOT NULL,
+  `waktu` date NOT NULL,
+  `no_antrian` int(11) NOT NULL,
+  PRIMARY KEY (`id_bayar`),
+  KEY `FK_pembayaran` (`id_daftar`),
+  KEY `FK_pembayaran1` (`id_petugas`),
+  CONSTRAINT `FK_pembayaran` FOREIGN KEY (`id_daftar`) REFERENCES `pendaftaran` (`id_daftar`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_pembayaran1` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="pasien" view="colnames">
+<left>8</left>
+<top>5</top>
+<width>122</width>
+<height>209</height>
+<sql_create_table>CREATE TABLE `pasien` (
+  `id_pasien` varchar(15) NOT NULL,
+  `nama_pasien` varchar(100) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `jk` varchar(10) NOT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `telp` varchar(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id_pasien`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="resep" view="colnames">
+<left>24</left>
+<top>661</top>
+<width>111</width>
+<height>158</height>
+<sql_create_table>CREATE TABLE `resep` (
+  `id_resep` varchar(18) NOT NULL,
+  `id_daftar` varchar(15) NOT NULL,
+  `id_petugas` varchar(10) NOT NULL,
+  `waktu` date NOT NULL,
+  `keterangan` text NOT NULL,
+  PRIMARY KEY (`id_resep`),
+  KEY `FK_resep` (`id_daftar`),
+  KEY `FK_resep1` (`id_petugas`),
+  CONSTRAINT `FK_resep1` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_resep` FOREIGN KEY (`id_daftar`) REFERENCES `pendaftaran` (`id_daftar`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
